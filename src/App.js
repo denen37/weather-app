@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import logo from './images/weather-logo.svg'
 import cloudy from './images/Cloudy.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCloud, faDroplet, faMagnifyingGlass, faTemperatureHalf, faWind } from '@fortawesome/free-solid-svg-icons'
+import { faBolt, faBoltLightning, faCloud, faCloudBolt, faCloudMoon, faCloudShowersHeavy, faCloudSun, faDroplet, faMagnifyingGlass, faSmog, faSun, faTemperatureHalf, faWind } from '@fortawesome/free-solid-svg-icons'
 import { faSnowflake } from '@fortawesome/free-regular-svg-icons'
 import { BarLoader } from 'react-spinners';
 
@@ -49,6 +49,51 @@ export default function App() {
         setIsShowDropdown(false);
     }
 
+    const getThemeIcon = (condition) => {
+        switch (true) {
+            case condition?.toLowerCase().includes('partly') &&
+                condition?.toLowerCase().includes('sunny'):
+
+            case condition?.toLowerCase().includes('partly') &&
+                condition?.toLowerCase().includes('cloudy'):
+                return faCloudSun;
+
+            case condition?.toLowerCase().includes('cloudy'):
+                return faCloud;
+
+            case condition?.toLowerCase().includes('rain'):
+                return faCloudShowersHeavy;
+
+            case condition?.toLowerCase().includes('snow'):
+                return faSnowflake;
+
+            case condition?.toLowerCase().includes('sunny'):
+                return faSun;
+
+            case condition?.toLowerCase().includes('wind'):
+                return faWind;
+
+            case condition?.toLowerCase().includes('storm'):
+                return faBolt;
+
+            case condition?.toLowerCase().includes('fog'):
+                return faCloudMoon;
+
+            case condition?.toLowerCase().includes('hail'):
+                return faCloudBolt;
+
+            case condition?.toLowerCase().includes('thunderstorm'):
+                return faBoltLightning;
+
+            case condition?.toLowerCase().includes('haze'):
+                return faSmog;
+
+            default:
+                return faCloudSun;
+        }
+
+    }
+
 
     useEffect(() => {
 
@@ -86,7 +131,7 @@ export default function App() {
         console.log(PENDING);
         axios.request(options)
             .then((res) => {
-                console.log(res.data);
+                console.log(res.data.current_observation?.condition?.temperature);
                 setWeatherData(res.data)
                 setRequestState(SUCCESS);
                 console.log(SUCCESS);
@@ -151,7 +196,7 @@ export default function App() {
                                     <h1 className='text-5xl'>{weatherData.location?.city}</h1>
                                     <p>{new Date().toDateString()}</p>
                                 </div>
-                                <img src={cloudy} alt='clouds' className='w-[50px]' />
+                                <FontAwesomeIcon icon={getThemeIcon(weatherData.current_observation?.condition.text)} size='2x' color='white' />
                             </div>
                         </div>
 
@@ -235,7 +280,7 @@ export default function App() {
                                                     if (index > 0) {
                                                         return <li className='flex items-center gap-10'>
                                                             <FontAwesomeIcon icon={
-                                                                weatherData.forecasts[index]?.text.includes('Cloudy') ? faCloud : faSnowflake
+                                                                getThemeIcon(weatherData.forecasts[index]?.text)
                                                             } className='text-white text-5xl opacity-90' />
                                                             <div className='text-lg text-white flex-1'>
                                                                 <p className=''>{weatherData.forecasts[index]?.day}</p>
